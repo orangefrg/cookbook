@@ -33,6 +33,11 @@ def check_user(request):
         return redirect(LOGIN_PAGE + '?next=' + next + "&login_fail=true")
 
 @login_required(login_url=LOGIN_PAGE)
+def log_out(request):
+    logout(request)
+    return redirect(LOGIN_PAGE + '?logout=true')
+
+@login_required(login_url=LOGIN_PAGE)
 def recipes(request):
     template = loader.get_template('recipes.html')
     context = {'name': request.user.first_name, 'lastname': request.user.last_name}
