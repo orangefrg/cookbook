@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.template import loader
+from .workers import recipes_as_tables
 
 
 # Create your views here.
@@ -40,5 +41,5 @@ def log_out(request):
 @login_required(login_url=LOGIN_PAGE)
 def recipes(request):
     template = loader.get_template('recipes.html')
-    context = {'name': request.user.first_name, 'lastname': request.user.last_name}
+    context = {'name': request.user.first_name, 'lastname': request.user.last_name, 'recipes': recipes_as_tables()}
     return HttpResponse(template.render(context, request))
