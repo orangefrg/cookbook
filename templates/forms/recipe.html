@@ -1,0 +1,156 @@
+{% load basic_filters %}
+{{ form.ingredient_count|addclass:'form-control' }}
+<div class="form-group row">
+    <div class="col-lg-4 col-sm-12">
+        <label for="id_recipe_name">
+            {{ form.recipe_name.label }}
+        </label>
+    </div>
+    <div class="col-lg-8 col-sm-12">
+        {{ form.recipe_name|addclass:'form-control' }}
+        <ul class="list-group">
+            {% for err in form.recipe_name.errors %}
+                <li class="list-group-item">{{ err }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="col-lg-4 col-sm-12">
+        <label for="id_recipe_name">
+            {{ form.category.label }}
+        </label>
+    </div>
+    <div class="col-lg-8 col-sm-12">
+        {{ form.category|addclass:'form-control' }}
+        <ul class="list-group">
+            {% for err in form.category.errors %}
+                <li class="list-group-item">{{ err }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="col-lg-4 col-sm-12">
+        <label for="id_recipe_name">
+            {{ form.url.label }}
+        </label>
+    </div>
+    <div class="col-lg-8 col-sm-12">
+        {{ form.url|addclass:'form-control' }}
+        <ul class="list-group">
+            {% for err in form.url.errors %}
+                <li class="list-group-item">{{ err }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="col-12">
+        <label for="id_recipe_name">
+            {{ form.tags.label }}
+        </label>
+    </div>
+    <div class="col-12">
+        {{ form.tags|addclass:'form-control' }}
+        <ul class="list-group">
+            {% for err in form.tags.errors %}
+                <li class="list-group-item">{{ err }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <label class="col-lg-12 col-sm-12 col-form-label">Ингредиенты</label>
+    {% for i in form.ingredient_count.value|getrange %}
+    {% with ind_ingr=i|addtoend:"ingredient_" ind_amount=i|addtoend:"amount_" %}
+        {% with field_ingr=form|getdictvalue:ind_ingr field_amount=form|getdictvalue:ind_amount %}
+            <div class="form-group row" id="{{ field_ingr.name }}">
+                <div class="col-lg-5 col-sm-12">
+                    {{ field_ingr|addclass:'form-control' }}
+                    <ul class="list-group">
+                        {% for err in field_ingr.errors %}
+                        <li class="list-group-item">{{ err }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-sm-4">
+                    <label for={{ field_amount|addtoend:"id_" }} id="{{ field_amount.name|add:"_label" }}" class="col-form-label">Количество</label>
+                </div>
+                <div class="col-lg-4 col-sm-7">
+                    {{ field_amount|addclass:'form-control' }}
+                    <ul class="list-group">
+                        {% for err in field_amount.errors %}
+                        <li class="list-group-item">{{ err }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-lg-1 col-sm-1">
+                    <button type="button" id="remove_{{ i }}" class="btn btn-danger"><span class="oi oi-x"></span></button>
+                </div>
+                {% if forloop.last %}
+                {% endif %}
+            </div>
+        {% endwith %}
+    {% endwith %}
+{% endfor %}
+<div class="col-lg-1 col-sm-1">
+    <button type="button" id="add-another" class="btn btn-success"><span class="oi oi-plus"></span></button>
+</div>
+<label class="col-lg-12 col-sm-12 col-form-label">Описание</label>
+<div class="col-12">
+    {{ form.description|addclass:'form-control' }}
+</div>
+</div>
+<script>
+    var count_field = $("[name=ingredient_count]")
+	var form_count = Number(count_field.val());
+
+    function remove_ingredient(event) {
+        var ind = event.data.index;
+        if(ind == 0 && form_count <= 1) {
+            return;
+        }
+        deletable = $("#ingredient_" + String(ind));
+        deletable.remove();
+        for(i = ind + 1; i < form_count; i++) {
+            var current_div_name = "#ingredient_" + String(i);
+            var current_amount_name = "#id_amount_" + String(i);
+            var current_ingr_name = "#id_ingredient_" + String(i);
+            var current_lbl_name = "#amount_" + String(i) + "_label";
+            var current_remove_name = "#remove_" + String(i);
+            var current_div = $(current_div_name);
+            var current_amount = current_div.find(current_amount_name);
+            var current_ingr = current_div.find(current_ingr_name);
+            var current_lbl = current_div.find(current_lbl_name);
+            var current_remove = current_div.find(current_remove_name);
+            current_div.attr("id", "ingredient_" + String(i - 1));
+            current_amount.attr("id", "id_amount_" + String(i - 1));
+            current_ingr.attr("id", "id_ingredient_" + String(i - 1));
+            current_lbl.attr("id", "amount_" + String(i - 1) + "_label");
+            current_remove.attr("id", "remove_" + String(i - 1));
+            current_remove.off("click");
+            current_remove.click({index: i - 1}, remove_ingredient);
+        }
+        form_count--;
+        count_field.val(form_count);
+    }
+    $("#remove_0").click({index: 0}, remove_ingredient);
+	$("#add-another").click(function() {
+        var last_div = "#ingredient_" + String(form_count - 1);
+        var last_amount = "#id_amount_" + String(form_count - 1);
+        var last_ingr = "#id_ingredient_" + String(form_count - 1);
+        var last_lbl = "#amount_" + String(form_count - 1) + "_label";
+		form_count ++;
+        count_field.val(form_count);
+		var new_el = $(last_div).clone();
+        new_el.attr("id", "ingredient_" + String(form_count - 1));
+        var new_loc = new_el.find(last_ingr);
+        new_loc.attr("id", "id_ingredient_" + String(form_count - 1));
+        new_loc.attr("name", "ingredient_" + String(form_count - 1));
+        var new_comp = new_el.find(last_amount);
+        new_comp.attr("id", "id_amount_" + String(form_count - 1));
+        new_comp.attr("name", "amount_" + String(form_count - 1));
+        var new_lbl = new_el.find(last_lbl);
+        new_lbl.attr("id", "amount_" + String(form_count - 1) + "_label")
+        var new_lbl_text = new_lbl.text().replace(/.$/,String(form_count))
+        new_lbl.text(new_lbl_text);
+        var new_remove = new_el.find("#remove_" + String(form_count - 2))
+        new_remove.attr("id", "remove_" + String(form_count - 1));
+        new_remove.click({index: form_count - 1}, remove_ingredient);
+		$(last_div).after(new_el);
+	})
+</script>
+<button type="submit" class="btn btn-primary" name="action" value="request">Запросить</button>

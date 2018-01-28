@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.template import loader
 from .workers import recipes_as_tables
+from .forms import RecipeForm
 
 
 # Create your views here.
@@ -41,5 +42,46 @@ def log_out(request):
 @login_required(login_url=LOGIN_PAGE)
 def recipes(request):
     template = loader.get_template('recipes.html')
-    context = {'name': request.user.first_name, 'lastname': request.user.last_name, 'recipes': recipes_as_tables()}
+    alert = None
+    if request.method == "POST":
+        form = RecipeForm(request.POST)
+        if form.is_valid():
+            alert = form.create_recipe()
+            if alert is None:
+                alert = {
+                    "class": "success",
+                    "header": "Успех!",
+                    "text": "Рецепт добавлен в базу"
+                }
+                form = RecipeForm()
+        else:
+            alert = {
+                "class": "danger",
+                "header": "Форма некорректна!",
+                "text": "Миша, всё хуйня, давай по новой"
+            }
+    else:
+        form = RecipeForm()
+    context = {'name': request.user.first_name, 'lastname': request.user.last_name, 'recipes': recipes_as_tables(),
+                'alert': alert, 'form': form}
+    return HttpResponse(template.render(context, request))
+
+
+@login_required(login_url=LOGIN_PAGE)
+def operations_manual(request):
+    template = loader.get_template('operations_manual.html')
+    availability = []
+    if request.method == "POST":
+        form = ManualOperationForm(request.POST)
+        if form.is_valid():
+            cdata = form.cleaned_data
+            comp = cdata["component"]
+            locs = form.get_location_tuples()
+            for l in locs:
+                av = check_availability(comp, l[1], l[0])
+                availability.append((av, comp, l[1], l[0]))
+    else:
+        form = ManualOperationForm()
+    context = {'name': request.user.first_name, 'lastname': request.user.last_name,
+               'email': request.user.email, 'form': form, 'availability': availability}
     return HttpResponse(template.render(context, request))

@@ -91,6 +91,8 @@ class Recipe(models.Model):
     category = models.CharField(max_length=15, choices=RECIPE_CATEGORY)
     nutrition = models.ForeignKey(Nutrition, null=True, blank=True, on_delete=models.PROTECT)
 
+    is_validated = models.BooleanField(default=False)
+
     def __str__(self):
         return self.name
 

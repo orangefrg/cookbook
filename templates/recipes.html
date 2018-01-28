@@ -5,9 +5,12 @@
     {% include "elements/common_scripts.html" with need_tables=True %}
     <!-- Page here -->
     {% include "elements/nav_panel.html" %}
+    <!-- Header with alert -->
+    {% include "elements/alert.html" with alert=alert %}
     <div class="container">
         <div class="row mt-4">
             <div class "col-12">
+                <h2>Рецепты в базе</h2>
                 <table class="table table-bordered table-hover" id="main-table">
                     <thead>
                         <tr>
@@ -55,7 +58,9 @@
                 <div class="col-sm-12">
                     <div class="collapse" id="collapseNew">
                         <div class="card card-body">
-                            Да, было бы круто
+                            <form method="post" id="ops_form">{% csrf_token %}
+                                {% include "forms/recipe.html" with form=form %}
+                            </form>
                         </div>
                     </div>
                 </div>
