@@ -9,8 +9,10 @@ def recipe_as_table(rcp):
         amnt = i.amount if not i.amount.is_integer() else int(i.amount)
         ingrs.append("{} - {} {}".format(i.ingredient.name, amnt, i.units))
     out_recipe["ingredients"] = ingrs
-    out_recipe["description"] = rcp.description
-    out_recipe["url"] = rcp.url
+    if rcp.description is not None and len(rcp.description) > 0:
+        out_recipe["description"] = rcp.description
+    if rcp.url is not None and len(rcp.url) > 0:
+        out_recipe["url"] = rcp.url
     tags = []
     for t in rcp.tags.all():
         tags.append(t.name)

@@ -29,6 +29,29 @@ class RecipeForm(forms.Form):
                 help_text = "Укажите количество"
             )
 
+    def import_recipe(self, recipe):
+        self.fields["recipe_name"].initial = recipe.name
+        self.fields["category"].initial = recipe.category
+        self.fields["url"].initial = recipe.url
+        self.fields["description"].initial = recipe.description
+        self.fields["tags"].initial = recipe.tags.all()
+        ingrs = recipe.ingredients.all()
+        self.fields["ingredient_count"].initial = ingrs.count()
+        i = 0
+        for ingr in recipe.ingredientamount_set.all():
+            self.fields["ingredient_{}".format(i)] = forms.ModelChoiceField(
+                label = "Ингредиент",
+                help_text = "Выберите ингредиент",
+                queryset = Ingredient.objects.all(),
+                initial = ingr.ingredient
+            )
+            self.fields["amount_{}".format(i)] = forms.CharField(
+                label = "Количество",
+                help_text = "Укажите количество",
+                initial = "{} {}".format(ingr.amount, ingr.units)
+            )
+            i += 1
+
     def create_recipe(self):
         cdata = self.cleaned_data
         description = cdata["description"]
@@ -43,7 +66,6 @@ class RecipeForm(forms.Form):
             url = url,
             category = cdata["category"]
         )
-        rcp.tags.set(cdata["tags"])
         out_errors = []
         out_ingr = []
         for i in range(cdata["ingredient_count"]):
@@ -74,7 +96,8 @@ class RecipeForm(forms.Form):
         if len(out_errors) == 0:
             rcp.save()
             for ing in out_ingr:
-                ing.save()
+                ing.save()         
+            rcp.tags.set(cdata["tags"])
             return None
         else:
             return {"header": "Ошибки в форме",

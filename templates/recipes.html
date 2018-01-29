@@ -39,9 +39,13 @@
                                 </ul>
                             </td>
                             <td>
+                                {% if rcp.description is not None %}
                                 <span class="">{{rcp.description}}</span>
                                 <br/>
-                                <a href="{{ rcp.url }}">Подробнее...</a>
+                                {% endif %}
+                                {% if rcp.url is not None %}
+                                    <a href="{{ rcp.url }}">Подробнее...</a>
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}
@@ -51,23 +55,12 @@
 
             <div class="row mt-4">
                 <div class="col-sm-12">
-                    <button class="btn btn-light" type="button" data-toggle="collapse" data-target="#collapseNew" aria-expanded="false" aria-controls="collapseNew">
-                        Добавить новый рецепт
-                    </button>
-                </div>
-                <div class="col-sm-12">
-                    <div class="collapse" id="collapseNew">
-                        <div class="card card-body">
-                            <form method="post" id="ops_form">{% csrf_token %}
-                                {% include "forms/recipe.html" with form=form %}
-                            </form>
-                        </div>
-                    </div>
+                    <a class="btn btn-primary" href="edit" role="button">Добавить рецепт</a>
                 </div>
             </div>
 
         </div>
     </div>
-
+    {% include "elements/footer.html" %}
 </body>
 </html>

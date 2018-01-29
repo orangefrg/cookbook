@@ -153,4 +153,10 @@
 		$(last_div).after(new_el);
 	})
 </script>
-<button type="submit" class="btn btn-primary" name="action" value="request">Запросить</button>
+{% if operation == 'add' %}
+    <button type="submit" class="btn btn-success" name="action" value="add">Добавить</button>
+{% elif operation == 'edit' %}
+    <button type="submit" class="btn btn-primary" name="action" value="edit">Изменить</button>
+{% elif operation == 'delete' %}
+    <button type="submit" class="btn btn-danger" name="action" value="delete">Удалить</button>
+{% endif %}

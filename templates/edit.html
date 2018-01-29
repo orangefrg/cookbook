@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+{% include "elements/common_header.html" %}
+<body>
+    {% include "elements/common_scripts.html" with need_tables=True %}
+    <!-- Page here -->
+    {% include "elements/nav_panel.html" %}
+    <!-- Header with alert -->
+    {% include "elements/alert.html" with alert=alert %}
+    <div class="container">
+        <div class="row mt-4">
+            {% if element == 'recipes' %}
+                <form method="post" id="ops_form">{% csrf_token %}
+                    {% include "forms/recipe.html" with form=form operation=operation %}
+                </form>
+            {% endif %}
+        </div>
+        <div class="row mt-4">
+            <div class="col-12">
+                <a class="btn btn-light" href="/cookbook/{{ element }}" role="button">Вернуться</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

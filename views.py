@@ -66,22 +66,30 @@ def recipes(request):
                 'alert': alert, 'form': form}
     return HttpResponse(template.render(context, request))
 
-
 @login_required(login_url=LOGIN_PAGE)
-def operations_manual(request):
-    template = loader.get_template('operations_manual.html')
-    availability = []
+def edit_recipe(request, operation=None):
+    template = loader.get_template('edit.html')
+    alert = None
+    optype = 'add'
     if request.method == "POST":
-        form = ManualOperationForm(request.POST)
+        form = RecipeForm(request.POST)
         if form.is_valid():
-            cdata = form.cleaned_data
-            comp = cdata["component"]
-            locs = form.get_location_tuples()
-            for l in locs:
-                av = check_availability(comp, l[1], l[0])
-                availability.append((av, comp, l[1], l[0]))
+            alert = form.create_recipe()
+            if alert is None:
+                alert = {
+                    "class": "success",
+                    "header": "Успех!",
+                    "text": "Рецепт добавлен в базу"
+                }
+                form = RecipeForm()
+        else:
+            alert = {
+                "class": "danger",
+                "header": "Форма некорректна!",
+                "text": "Миша, всё хуйня, давай по новой"
+            }
     else:
-        form = ManualOperationForm()
-    context = {'name': request.user.first_name, 'lastname': request.user.last_name,
-               'email': request.user.email, 'form': form, 'availability': availability}
+        form = RecipeForm()
+    context = {'name': request.user.first_name, 'lastname': request.user.last_name, 'recipes': recipes_as_tables(),
+                'alert': alert, 'form': form, 'element': 'recipes', 'operation': optype}
     return HttpResponse(template.render(context, request))
