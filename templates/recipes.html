@@ -45,7 +45,10 @@
                                 {% endif %}
                                 {% if rcp.url is not None %}
                                     <a href="{{ rcp.url }}">Подробнее...</a>
+                                    <br/>
                                 {% endif %}
+                                <a class="btn btn-success btn-sm btn-outline" href="edit/{{ rcp.uid }}" role="button"><span class="oi oi-wrench"></span></a>
+                                <a class="btn btn-danger btn-sm btn-outline" href="delete/{{ rcp.uid }}" role="button"><span class="oi oi-x"></span></a>
                             </td>
                         </tr>
                         {% endfor %}

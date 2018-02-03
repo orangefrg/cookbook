@@ -89,7 +89,7 @@ class Recipe(models.Model):
     )
     tags = models.ManyToManyField(RecipeTag, blank=True)
     category = models.CharField(max_length=15, choices=RECIPE_CATEGORY)
-    nutrition = models.ForeignKey(Nutrition, null=True, blank=True, on_delete=models.PROTECT)
+    nutrition = models.ForeignKey(Nutrition, null=True, blank=True, on_delete=models.SET_NULL)
 
     is_validated = models.BooleanField(default=False)
 
@@ -115,7 +115,7 @@ class Recipe(models.Model):
         verbose_name_plural = "Рецепты"
 
 class IngredientAmount(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.PROTECT)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.PROTECT)
     amount = models.FloatField()
     units = models.CharField(max_length=50, null=True, blank=True)

@@ -7,6 +7,7 @@ from django.shortcuts import redirect
 from django.template import loader
 from .workers import recipes_as_tables
 from .forms import RecipeForm
+from .models import Recipe
 
 
 # Create your views here.
@@ -40,37 +41,16 @@ def log_out(request):
     return redirect(LOGIN_PAGE + '?logout=true')
 
 @login_required(login_url=LOGIN_PAGE)
-def recipes(request):
+def recipes(request, alert=None):
     template = loader.get_template('recipes.html')
-    alert = None
-    if request.method == "POST":
-        form = RecipeForm(request.POST)
-        if form.is_valid():
-            alert = form.create_recipe()
-            if alert is None:
-                alert = {
-                    "class": "success",
-                    "header": "Успех!",
-                    "text": "Рецепт добавлен в базу"
-                }
-                form = RecipeForm()
-        else:
-            alert = {
-                "class": "danger",
-                "header": "Форма некорректна!",
-                "text": "Миша, всё хуйня, давай по новой"
-            }
-    else:
-        form = RecipeForm()
     context = {'name': request.user.first_name, 'lastname': request.user.last_name, 'recipes': recipes_as_tables(),
-                'alert': alert, 'form': form}
+                'alert': alert}
     return HttpResponse(template.render(context, request))
 
 @login_required(login_url=LOGIN_PAGE)
-def edit_recipe(request, operation=None):
+def add_recipe(request):
     template = loader.get_template('edit.html')
     alert = None
-    optype = 'add'
     if request.method == "POST":
         form = RecipeForm(request.POST)
         if form.is_valid():
@@ -91,5 +71,58 @@ def edit_recipe(request, operation=None):
     else:
         form = RecipeForm()
     context = {'name': request.user.first_name, 'lastname': request.user.last_name, 'recipes': recipes_as_tables(),
-                'alert': alert, 'form': form, 'element': 'recipes', 'operation': optype}
+                'alert': alert, 'form': form, 'element': 'recipes', 'operation': 'add'}
     return HttpResponse(template.render(context, request))
+
+@login_required(login_url=LOGIN_PAGE)
+def edit_recipe(request, operation=None, rcp_in=None):
+    template = loader.get_template('edit.html')
+    alert = None
+    if request.method == "POST":
+        form = RecipeForm(request.POST)
+        if form.is_valid():
+            alert = form.edit_recipe(rcp_in)
+            if alert is None:
+                alert = {
+                    "class": "success",
+                    "header": "Успех!",
+                    "text": "Рецепт успешно изменён"
+                }
+                form = RecipeForm()
+                return redirect('recipes-all')
+        else:
+            alert = {
+                "class": "danger",
+                "header": "Форма некорректна!",
+                "text": "Миша, всё хуйня, давай по новой"
+            }
+    else:
+        form = RecipeForm()
+        form.import_recipe(Recipe.objects.get(uid=rcp_in))
+    context = {'name': request.user.first_name, 'lastname': request.user.last_name, 'recipes': recipes_as_tables(),
+                'alert': alert, 'form': form, 'element': 'recipes', 'operation': 'edit'}
+    return HttpResponse(template.render(context, request))
+
+def delete_recipe(request, rcp_in=None, alert=None):
+    if rcp_in is not None:
+        try:
+            Recipe.objects.get(uid=rcp_in).delete()
+            alert = {
+                "class": "success",
+                "header": "Успех!",
+                "text": "Рецепт успешно удалён"
+            }
+        except:
+            alert = {
+                "class": "danger",
+                "header": "Что-то пошло не так",
+                "text": "Не удалось удалить рецепт"
+            }
+
+    else:
+        alert = {
+                "class": "danger",
+                "header": "Что-то пошло не так",
+                "text": "Не удалось удалить рецепт"
+            }
+    return redirect('recipes-all')

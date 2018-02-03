@@ -17,6 +17,7 @@ def recipe_as_table(rcp):
     for t in rcp.tags.all():
         tags.append(t.name)
     out_recipe["tags"] = tags
+    out_recipe["uid"] = rcp.uid
     return out_recipe
 
 def recipes_as_tables():

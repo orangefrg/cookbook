@@ -95,8 +95,11 @@
 </div>
 </div>
 <script>
-    var count_field = $("[name=ingredient_count]")
-	var form_count = Number(count_field.val());
+    var count_field = $("[name=ingredient_count]");
+    var form_count = Number(count_field.val());
+    for(j = 0; j < form_count; j++) {
+        $("#remove_" + String(j)).click({index: j}, remove_ingredient);
+    };
 
     function remove_ingredient(event) {
         var ind = event.data.index;
@@ -127,7 +130,6 @@
         form_count--;
         count_field.val(form_count);
     }
-    $("#remove_0").click({index: 0}, remove_ingredient);
 	$("#add-another").click(function() {
         var last_div = "#ingredient_" + String(form_count - 1);
         var last_amount = "#id_amount_" + String(form_count - 1);

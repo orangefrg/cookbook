@@ -103,5 +103,56 @@ class RecipeForm(forms.Form):
             return {"header": "Ошибки в форме",
                     "class": "danger",
                     "text": "Возникли следующие проблемы: {}".format(", ".join(out_errors))}
-                
+
+    def edit_recipe(self, recipe_uid):
+        cdata = self.cleaned_data
+        description = cdata["description"]
+        url = cdata["url"]
+        if (description is None or len(description) == 0) and (url is None or len(url) == 0):
+            return {"header": "Неверное описание рецепта",
+                    "class": "danger",
+                    "text": "У рецепта должно быть описание или адрес"}
+        recipe = Recipe.objects.get(uid=recipe_uid)
+        recipe.name = cdata["recipe_name"]
+        recipe.description = description
+        recipe.url = url
+        recipe.category = cdata["category"]
+
+
+        out_errors = []
+        out_ingr = []
+        for i in range(cdata["ingredient_count"]):
+            amount_form = cdata["amount_{}".format(i)]
+            ingredient_form = cdata["ingredient_{}".format(i)]
+            rg = re.compile("(([\.]*)(\d+)([\.,]*)(\d*))(\s*)(((\s*)([а-яА-Яa-zA-Z0-9]+))*)$")
+            amount_match = rg.match(amount_form)
+            success = True
+            amount = None
+            units = None
+            if not amount_match:
+                out_errors.append("не удалось найти количество в строке \"{}\"".format(amount_form))
+            else:
+                try:
+                    amount = float(amount_match.group(1))
+                    units = amount_match.group(7)
+                except:
+                    out_errors.append("не удалось распознать количество в строке \"{}\"".format(amount_form))
+                    success = False
+            if success:
+                ingr = IngredientAmount(
+                    recipe = recipe,
+                    ingredient = ingredient_form,
+                    amount = amount,
+                    units = units
+                )
+                out_ingr.append(ingr)
+
+        if len(out_errors) == 0:
+            recipe.ingredientamount_set.all().delete()
+            for ing in out_ingr:
+                ing.save()     
+            recipe.save()
+            recipe.tags.set(cdata["tags"])    
+            return None
+
                 
