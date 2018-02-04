@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="en">
-{% include "elements/common_header.html" %}
+{% include "elements/common_header.html" with page_name="Рецепты" page_description="Редактирование списка рецептов" %}
 <body>
     {% include "elements/common_scripts.html" with need_tables=True %}
     <!-- Page here -->
-    {% include "elements/nav_panel.html" %}
+    {% include "elements/nav_panel.html" with page_header_name="Управление рецептами" %}
     <!-- Header with alert -->
     {% include "elements/alert.html" with alert=alert %}
     <div class="container">

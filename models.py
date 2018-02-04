@@ -119,3 +119,5 @@ class IngredientAmount(models.Model):
     ingredient = models.ForeignKey(Ingredient, on_delete=models.PROTECT)
     amount = models.FloatField()
     units = models.CharField(max_length=50, null=True, blank=True)
+    def __str__(self):
+        return "{} - {} {} ({})".format(self.ingredient.name, self.amount, self.units, self.recipe.name)

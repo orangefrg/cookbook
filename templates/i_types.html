@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+{% include "elements/common_header.html" with page_name="Типы ингредиентов" page_description="Редактирование типов ингредиентов" %}
+<body>
+    {% include "elements/common_scripts.html" with need_tables=True %}
+    <!-- Page here -->
+    {% include "elements/nav_panel.html" with page_header_name="Типы ингредиентов" %}
+    <!-- Header with alert -->
+    {% include "elements/alert.html" with alert=alert %}
+    <div class="container">
+        <div class="row mt-4">
+            <div class "col-12">
+                <h2>Типы ингредиентов</h2>
+                <table class="table table-bordered table-hover" id="main-table">
+                    <thead>
+                        <tr>
+                            <th scope="col" width="15%">Название</th>
+                            <th scope="col" width="35%">Ингредиенты</th>
+                            <th scope="col" width="35%">Рецепты</th>
+                            <th scope="col" width="15%">Операции</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for it in i_types %}
+                        <tr>
+                            <th scope="row">{{ it.name }}</th>
+                            <td>
+                                <ul>
+                                {% for ingr in it.ingredients %}
+                                    <li>{{ ingr }}</li>
+                                {% endfor %}
+                                </ul>
+                            </td>
+                            <td>
+                                <ul>
+                                {% for rcp in it.recipes %}
+                                    <li>{{ rcp.name }} ({{ rcp.type }})</li>
+                                {% endfor %}
+                                </ul>
+                            </td>
+                            <td>
+                                <a class="btn btn-success btn-sm btn-outline" href="edit/{{ it.id }}" role="button"><span class="oi oi-wrench"></span></a>
+                                {% if it.ingredients|length_is:"0" %}
+                                    <a class="btn btn-danger btn-sm btn-outline" href="delete/{{ it.id }}" role="button"><span class="oi oi-x"></span></a>
+                                {% else %}
+                                    <span class="d-inline-block" tabindex="0" data-toggle="tooltip" title="Нельзя удалять используемый тип ингредиентов">
+                                        <button type="button" class="btn btn-secondary btn-sm" disabled><span class="oi oi-x"></span></button>
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-sm-12">
+                <a class="btn btn-primary" href="edit" role="button">Добавить тип ингредиента</a>
+            </div>
+        </div>
+
+        </div>
+    </div>
+    {% include "elements/footer.html" %}
+</body>
+</html>

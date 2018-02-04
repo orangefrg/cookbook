@@ -4,7 +4,7 @@
             <span class="oi oi-menu"></span>
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="/cookbook/generate">Подбор рецептов</a>
+            <button class="dropdown-item disabled" type="button" disabled>Подбор рецептов</button>
             <div class="dropdown-divider"></div>
             <h6 class="dropdown-header">Управление</h6>
             <div class="dropdown-divider"></div>
@@ -14,12 +14,12 @@
             <div class="dropdown-divider"></div>
             <h6 class="dropdown-header">Настройки</h6>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="/cookbook/settings">Генерация</a>
+            <button class="dropdown-item disabled" type="button" disabled>Генерация</button>
             <a class="dropdown-item" href="/cookbook/logout">Сменить пользователя</a>
         </div>
     </div>
     <div class="navbar-header">
-        <span class="navbar-brand">Управление рецептами</span>
+        <span class="navbar-brand">{{ page_header_name }}</span>
     </div>
     <span class="navbar-text">Вход выполнен от имени "{{name}} {{lastname}}"</span>
 </nav>

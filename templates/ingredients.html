@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+{% include "elements/common_header.html" with page_name="Ингредиенты" page_description="Редактирование списка ингредиентов" %}
+<body>
+    {% include "elements/common_scripts.html" with need_tables=True %}
+    <!-- Page here -->
+    {% include "elements/nav_panel.html" with page_header_name="Управление ингредиентами" %}
+    <!-- Header with alert -->
+    {% include "elements/alert.html" with alert=alert %}
+    <div class="container">
+        <div class="row mt-4">
+            <div class "col-12">
+                <h2>Ингредиенты в базе</h2>
+                <table class="table table-bordered table-hover" id="main-table">
+                    <thead>
+                        <tr>
+                            <th scope="col" width="20%">Название</th>
+                            <th scope="col" width="20%">Тип</th>
+                            <th scope="col" width="45%">Где используется</th>
+                            <th scope="col" width="15%">Операции</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ingr in ingredients %}
+                        <tr>
+                            <th scope="row">{{ ingr.name }}</th>
+                            <td>
+                                {{ ingr.type_name }}
+                            </td>
+                            <td>
+                                <ul>
+                                {% for rcp in ingr.recipes %}
+                                    <li>{{ rcp.name }} ({{ rcp.type }})</li>
+                                {% endfor %}
+                                </ul>
+                            </td>
+                            <td>
+                                <a class="btn btn-success btn-sm btn-outline" href="edit/{{ ingr.id }}" role="button"><span class="oi oi-wrench"></span></a>
+                                {% if ingr.recipes|length_is:"0" %}
+                                    <a class="btn btn-danger btn-sm btn-outline" href="delete/{{ ingr.id }}" role="button"><span class="oi oi-x"></span></a>
+                                {% else %}
+                                    <span class="d-inline-block" tabindex="0" data-toggle="tooltip" title="Нельзя удалять используемый ингредиент">
+                                        <button type="button" class="btn btn-secondary btn-sm" disabled><span class="oi oi-x"></span></button>
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-sm-12">
+                <a class="btn btn-primary" href="edit" role="button">Добавить ингредиент</a>
+            </div>
+        </div>
+
+        </div>
+    </div>
+    {% include "elements/footer.html" %}
+</body>
+</html>

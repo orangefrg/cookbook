@@ -1,4 +1,4 @@
-from .models import Recipe
+from .models import Recipe, Ingredient, IngredientType
 
 def recipe_as_table(rcp):
     out_recipe = {}
@@ -25,3 +25,43 @@ def recipes_as_tables():
     for r in Recipe.objects.all():
         out_recipes.append(recipe_as_table(r))
     return out_recipes
+
+def ingredient_as_table(ingr):
+    out_ingr = {}
+    out_ingr["id"] = ingr.id
+    out_ingr["name"] = ingr.name
+    out_ingr["type_name"] = ingr.i_type.name
+    out_ingr["recipes"] = []
+    for iam in ingr.ingredientamount_set.all():
+        rcp = {"name": iam.recipe.name, "type": iam.recipe.get_category_display()}
+        if rcp not in out_ingr["recipes"]:
+            out_ingr["recipes"].append(rcp)
+    return out_ingr
+
+def ingredients_as_tables():
+    out_ingrs = []
+    for i in Ingredient.objects.all():
+        out_ingrs.append(ingredient_as_table(i))
+    return out_ingrs
+
+def i_type_as_table(i_type):
+    out_i_type = {}
+    out_i_type["id"] = i_type.id
+    out_i_type["name"] = i_type.name
+    out_i_type["ingredients"] = []
+    for ingr in i_type.ingredient_set.all():
+        if ingr.name not in out_i_type["ingredients"]:
+            out_i_type["ingredients"].append(ingr.name)
+    out_i_type["recipes"] = []
+    for rcp in Recipe.objects.filter(ingredients__i_type__name=i_type.name):
+        r = {"name": rcp.name, "type": rcp.get_category_display()}
+        if r not in out_i_type["recipes"]:
+            out_i_type["recipes"].append(r)
+    return out_i_type
+
+def i_types_as_tables():
+    out_i_types = []
+    for i in IngredientType.objects.all():
+        out_i_types.append(i_type_as_table(i))
+    return out_i_types
+    

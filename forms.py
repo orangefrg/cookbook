@@ -2,6 +2,8 @@ from django import forms
 from .models import *
 import re
 
+# Recipe
+
 class RecipeForm(forms.Form):
     recipe_name = forms.CharField(label = "Название", required = True, strip = True, max_length = 200)
     category = forms.ChoiceField(label = "Категория", choices = RECIPE_CATEGORY, required = True)
@@ -154,5 +156,18 @@ class RecipeForm(forms.Form):
             recipe.save()
             recipe.tags.set(cdata["tags"])    
             return None
+# Ingredient
+
+class IngredientForm(forms.ModelForm):
+    class Meta:
+        model = Ingredient
+        fields = ["name", "i_type"]
+
+# Ingredient type
+
+class IngredientTypeForm(forms.ModelForm):
+    class Meta:
+        model = IngredientType
+        fields = ["name"]
 
                 
